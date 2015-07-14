@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="x-ua-compatible" content="ie=edge" />
+  <title>Quiz</title>
+  <!-- Estas lineas van en los primeros 1024 bytes -->
+
+  <!-- Referencias -->
+  <meta name="author" content="2015 - José A. Pacheco Ondoño - joanpaon@gmail.com" />
+  <meta name="description" content="Plantilla HTML5 + CSS3 + JS" />
+
+  <!-- Ajuste viewport dispositivos móviles -->
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+
+  <!-- Hojas de estilo -->
+  <link rel="stylesheet" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="/css/app.css" />
+</head>
+
+<body>
+  <div class="container">
+    <header class="row">
+      <div class="h1 text-center col-sm-12">El juego de las preguntas</div>
+    </header>
+
+    <div class="row">
+      <nav class="col-sm-4">
+        <ul class="list-unstyled">
+          <li>
+            <a class="btn btn-default btn-sm btn-block" href="/">Inicio</a>
+          </li>
+          <li>
+            <a  class="btn btn-default btn-sm btn-block"href="/quizes/question">Preguntas</a>
+          </li>
+        </ul>
+      </nav>
+
+      <section class="col-sm-8">
+        <%- body %>
+      </section>
+    </div>
+
+    <footer class="row">
+      <p class="text-center col-sm-12">
+        <a href="https://es.wikipedia.org/wiki/Quiz">¿Qué es un Quiz?</a>
+      </p>
+    </footer>
+  </div>
+
+  <!-- Scripts de la aplicación -->
+  <script src="/js/jquery-2.1.4.js"></script>
+  <script src="/js/bootstrap.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+
+</html>

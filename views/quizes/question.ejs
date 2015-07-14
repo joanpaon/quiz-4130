@@ -1,40 +1,7 @@
-<!DOCTYPE html>
-<html lang="es">
+<div class="h4 text-center">Pregunta</div>
+<p class="text-center"><%= pregunta %></p>
 
-<head>
-  <meta charset="utf-8" />
-  <meta http-equiv="x-ua-compatible" content="ie=edge" />
-  <title>Quiz</title>
-  <!-- Estas lineas van en los primeros 1024 bytes -->
-
-  <!-- Referencias -->
-  <meta name="author" content="2015 - José A. Pacheco Ondoño - joanpaon@gmail.com" />
-  <meta name="description" content="Curso nodejs + express" />
-
-  <!-- Ajuste viewport dispositivos móviles -->
-  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-
-  <!-- Hojas de estilo -->
-  <link rel="stylesheet" href="/css/bootstrap.css" />
-  <link rel="stylesheet" href="/css/app.css" />
-</head>
-
-<body>
-  <!-- Contenido Web -->
-
-  <div class="h2 text-center">Quiz: el juego de las preguntas</div>
-  <div class="h4 text-center">Pregunta</div>
-  <p class="text-center"><%= pregunta %></p>
-
-  <form class="form-inline text-center" method="get" action="/quizes/answer">
-    <input class="form-control" type="text" id="respuesta" name="respuesta" placeholder="Responda aquí">
-    <input class="btn btn-default" type="submit" value="Enviar">
-  </form>
-
-  <!-- Scripts de la aplicación -->
-  <script src="/js/jquery-2.1.4.js"></script>
-  <script src="/js/bootstrap.js"></script>
-  <script src="/js/app.js"></script>
-</body>
-
-</html>
+<form class="form-inline text-center" method="get" action="/quizes/answer">
+  <input class="form-control" type="text" id="respuesta" name="respuesta" placeholder="Responda aquí">
+  <input class="btn btn-default" type="submit" value="Enviar">
+</form>
