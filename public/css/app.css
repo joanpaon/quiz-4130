@@ -1,15 +1,19 @@
 header {
-  background-color: aquamarine;
+/*  background-color: aquamarine;*/
+  padding-bottom: 10px;
 }
 
 nav {
-  background-color: beige;
+/*  background-color: beige;*/
+  padding-top: 10px;
 }
 
 section {
-  background-color: azure;
+/*  background-color: azure;*/
+  padding-bottom: 10px;
 }
 
 footer {
-  background-color: cornflowerblue;
+  padding-top: 10px;
+/*  background-color: cornflowerblue;*/
 }
