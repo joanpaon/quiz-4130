@@ -1,16 +1,16 @@
 // Importa el modelo
 var models = require("../models/models");
 
-// GET - /quizes/question
-var mwQuestion = function (req, res) {
-  // Promesa de búsqueda
-  var _prmQuestion = function (listaQuizes) {
-    // Archivo ejs - Sin "/" inicial
-    var __vista = "quizes/question";
+// GET - /quizes - index
+var mwIndex = function (req, res) {
+  // Promesa
+  var _promise = function (quizes) {
+    // Vista - Sin "/" inicial - Sin extensión "ejs"
+    var __vista = "quizes/index";
 
-    // Pregunta del primer Quiz
+    // Parámetros vista
     var __param = {
-      pregunta: listaQuizes[0].pregunta
+      quizes: quizes
     };
 
     // Renderizar la vista
@@ -18,37 +18,62 @@ var mwQuestion = function (req, res) {
   };
 
   // findAll([options]) -> Promise.<Array.<Instance>>
-  // Recupera el primer Quiz
-  models.Quiz.findAll().then(_prmQuestion);
+  // Recupera todos los Quizes
+  models.Quiz.findAll().then(_promise);
 };
 
-// GET - /quizes/answer
-var mwAnswer = function (req, res) {
-  // Promesa de búsqueda
-  var _prmAnswer = function (listaQuizes) {
-    // Archivo ejs - Sin "/" inicial
-    var __vista = "quizes/answer";
+// GET - /quizes/:quizId(\\d+) - show
+var mwShow = function (req, res) {
+  // Promesa
+  var _promise = function (quiz) {
+    // Vista - Sin "/" inicial - Sin extensión "ejs"
+    var __vista = "quizes/show";
 
     // Parámetros vista
-    var __paramOK = {
-      respuesta: 'Correcto'
-    };
-    var __paramNO = {
-      respuesta: 'Incorrecto'
+    var __param = {
+      quiz: quiz
     };
 
     // Renderizar la vista
-    if (req.query.respuesta.toUpperCase() === "ROMA") {
-      res.render(__vista, __paramOK);
+    res.render(__vista, __param);
+  };
+
+  // findById([options], ') -> Promise.<Instance>
+  // Recupera el Quiz identificado por su clave primaria
+  models.Quiz.findById(req.params.quizId).then(_promise);
+};
+
+// GET - /quizes/:quizId(\\d+)/answer - answer
+var mwAnswer = function (req, res) {
+  // Promesa
+  var _promise = function (quiz) {
+    // Vista - Sin "/" inicial - Sin extensión "ejs"
+    var __vista = "quizes/answer";
+
+    // Parámetros vista
+    var __paramSI = {
+      quiz: quiz,
+      respuesta: "Correcto"
+    };
+    var __paramNO = {
+      quiz: quiz,
+      respuesta: "Incorrecto"
+    };
+
+    // Renderizar la vista
+    if (req.query.respuesta.toUpperCase() === quiz.respuesta.toUpperCase()) {
+      res.render(__vista, __paramSI);
     } else {
       res.render(__vista, __paramNO);
     }
   };
 
-  // Recupera el primer Quiz
-  models.Quiz.findAll().then(_prmAnswer);
+  // findById([options], ') -> Promise.<Instance>
+  // Recupera el Quiz identificado por su clave primaria
+  models.Quiz.findById(req.params.quizId).then(_promise);
 };
 
 // Exporta controladores
-exports.question = mwQuestion;
+exports.index  = mwIndex;
+exports.show   = mwShow;
 exports.answer = mwAnswer;

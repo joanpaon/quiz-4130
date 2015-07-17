@@ -12,8 +12,9 @@ var quizController = require("../controllers/quiz_controller.js")
 
 router.get("/", homeController.home);   // Página principal
 
-router.get("/quizes/question", quizController.question);   // Pregunta
-router.get("/quizes/answer",   quizController.answer);     // Respuesta
+router.get("/quizes",                      quizController.index);  // Listado Quizes
+router.get("/quizes/:quizId(\\d+)",        quizController.show);   // Pregunta
+router.get("/quizes/:quizId(\\d+)/answer", quizController.answer); // Respuesta
 
 // Exporta el enrutador
 module.exports = router;

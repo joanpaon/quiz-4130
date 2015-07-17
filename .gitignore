@@ -31,3 +31,6 @@ npm-debug.log
 
 # Base de datos sqlite3
 quiz.sqlite
+
+# Variables de entorno locales
+.env

@@ -1,7 +1,7 @@
 <div class="h4 text-center">Pregunta</div>
-<p class="text-center"><%= pregunta %></p>
+<p class="text-center"><%= quiz.pregunta %></p>
 
-<form class="form-inline text-center" method="get" action="/quizes/answer">
+<form class="form-inline text-center" method="get" action="/quizes/<%= quiz.id %>/answer">
   <input class="form-control" type="text" id="respuesta" name="respuesta" placeholder="Responda aquí">
   <input class="btn btn-default" type="submit" value="Enviar">
 </form>

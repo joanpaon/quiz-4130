@@ -1,5 +1,5 @@
 {
-  "name": "credenciales",
+  "name": "quiz-4130",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -14,7 +14,9 @@
     "express-partials": "^0.3.0",
     "morgan": "~1.6.1",
     "sequelize": "^3.3.2",
-    "serve-favicon": "~2.3.0",
+    "serve-favicon": "~2.3.0"
+  },
+  "devDependencies": {
     "sqlite3": "^3.0.9"
   }
 }
