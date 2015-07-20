@@ -12,6 +12,8 @@ var quizController = require("../controllers/quiz_controller.js")
 
 router.get("/", homeController.home);   // Página principal
 
+router.param("quizId", quizController.load);  // Autoload de comandos con :quizId
+
 router.get("/quizes",                      quizController.index);  // Listado Quizes
 router.get("/quizes/:quizId(\\d+)",        quizController.show);   // Pregunta
 router.get("/quizes/:quizId(\\d+)/answer", quizController.answer); // Respuesta
