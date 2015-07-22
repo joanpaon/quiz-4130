@@ -40,7 +40,7 @@ var mwLoad = function (req, res, next, quizId) {
 };
 
 // GET - /quizes - index
-var mwIndex = function (req, res) {
+var mwIndex = function (req, res, next) {
   // Promesa
   var _promise = function (quizes) {
     // Vista - Sin "/" inicial - Sin extensión "ejs"
@@ -105,8 +105,77 @@ var mwAnswer = function (req, res) {
   res.render(__vista, __param);
 };
 
+// GET - /quizes/new - Formulario para nuevo Quiz
+var mwNew = function (req, res) {
+  // Vista - Sin "/" inicial - Sin extensión "ejs"
+  var _vista = "quizes/new";
+
+  // Define los campos de Quiz
+  var _campos = {
+    pregunta: "Escribir pregunta",
+    respuesta: "Escribir respuesta"
+  };
+  
+  // Instancia un objeto que representa una fila
+  // de la tabla Quiz, inicializando los campos
+  // pregunta y respuesta
+  // ---
+  // Realmente, en este caso, no es necesario hacer
+  // esto. Bastaria con enviar "_campos"
+  var _quiz = models.Quiz.build(_campos);
+  
+  // Parámetros vista
+  var _param = {
+    quiz: _quiz
+  };
+
+  // Renderizar la vista
+  res.render(_vista, _param);
+};
+
+// POST - /quizes/create - Crea un nuevo Quiz
+var mwCreate = function (req, res) {
+  // Promesa
+  var _promise = function () {
+    // Pedir la lista de quizes
+    var __url = "/quizes";
+
+    // Redirecciona la vista
+    res.redirect(__url);
+  };
+
+  // Define los campos que se guardarán del Quiz
+  var _campos = {
+    fields: ["pregunta", "respuesta"]
+  };
+  
+  // Recupera el objeto Quiz cuyos datos se introdujeron
+  // en el formulario de creación de nuevo Quiz en los
+  // campos con nombres "quiz[pregunta]" y "quiz[respuesta]"
+  // ---
+  // Como el formulario envia los datos con POST, éstos
+  // se encuentran URL-encoded en el cuerpo de la petición
+  // ---
+  // Mediante el método "inflate" del "URL-unencoded" del
+  // módulo "body-parser" esos nombres de campos generan
+  // un objeto Quiz:
+  //  {
+  //    quiz: {
+  //      pregunta: "Valor pregunta",
+  //      respuesta: "Valor respuesta"
+  //    }
+  //  }
+  // Este objeto es accesible a través de "req.body.quiz"
+  var _quiz = models.Quiz.build(req.body.quiz);
+  
+  // Guarda el quiz en BD y lista los Quizes actualizados
+  _quiz.save(_campos).then(_promise);
+};
+
 // Exporta controladores
 exports.load   = mwLoad;
 exports.index  = mwIndex;
 exports.show   = mwShow;
 exports.answer = mwAnswer;
+exports.new    = mwNew;
+exports.create = mwCreate;

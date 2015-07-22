@@ -20,7 +20,18 @@ app.set('view engine', 'ejs');
 app.use(favicon(path.join(__dirname, 'public/img', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+
+// https://github.com/expressjs/body-parser#bodyparserurlencodedoptions
+// ---
+// The extended option allows to choose between parsing the 
+// URL-encoded data with the querystring library (when false) or 
+// the qs library (when true). 
+// ---
+// https://www.npmjs.com/package/qs#readme
+app.use(bodyParser.urlencoded({
+  extended: true  // ---> /quizes/create
+}));
+
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(partials());
@@ -32,15 +43,16 @@ app.use('/', routes);
 // --- Gestión de errores
 
 // Genera el error 404 y lanza el manejador de error
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   var err = new Error('Recurso no disponible');
   err.status = 404;
+  // LLama al siguiente MW de error
   next(err);
 });
 
 // Manejador de error - Desarrollo
 if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
+  app.use(function (err, req, res, next) {
     res.status(err.status || 500);
     res.render('error', {
       message: err.message,
@@ -50,7 +62,7 @@ if (app.get('env') === 'development') {
 }
 
 // Manejador de error - Producción
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,

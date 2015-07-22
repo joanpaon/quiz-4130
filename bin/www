@@ -5,9 +5,9 @@ var nombreApp = "credenciales";
 var puertoApp = "5000";
 
 // Importa módulos
-var app   = require('../app');
+var app = require('../app');
 var debug = require('debug')(nombreApp + ":server");
-var http  = require('http');
+var http = require('http');
 
 // Establece y memoriza el puerto de escucha
 var puerto = normalizarPuerto(process.env.PORT || puertoApp);
@@ -40,7 +40,7 @@ function onError(error) {
     throw error;
   }
 
-  var bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
+  var bind = typeof puerto === 'string' ? 'Pipe ' + puerto : 'Port ' + puerto;
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
