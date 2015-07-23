@@ -56,15 +56,15 @@ var mwIndex = function (req, res, next) {
     res.render(_vista, _param);
   };
 
-  // Gestor de errores
-  var _catcher = function (error) {
+  // Gestor de errores en la vista
+  var _catcherFindAll = function (error) {
     // Pasa el control al MW de error
     next(error);
   };
 
   // findAll([options]) -> Promise.<Array.<Instance>>
   // Recupera todos los Quizes
-  models.Quiz.findAll().then(_handlerFindAll).catch(_catcher);
+  models.Quiz.findAll().then(_handlerFindAll).catch(_catcherFindAll);
 };
 
 // GET - /quizes/:quizId(\\d+) - show
@@ -278,12 +278,37 @@ var mwUpdate = function (req, res) {
   _quiz.validate().then(_handlerValidate);
 };
 
+// DELETE - /quizes/:quizId(\\d+) - Borra el quiz seleccionado
+var mwDestroy = function (req, res, next) {
+  // Recupera el Quiz a modificar - Autoload
+  var _quiz = req.quiz;
+
+  // Manejador de redirección
+  var _handlerDestroy = function () {
+    // Ruta de redirección
+    var _ruta = "/quizes";
+
+    // Redireccionar vista
+    res.redirect(_ruta);
+  };
+    
+  // Gestor de errores en la vista
+  var _catcherDestroy = function (error) {
+    // Pasa el control al MW de error
+    next(error);
+  };
+    
+  // Elimina el Quiz actual
+  _quiz.destroy().then(_handlerDestroy).catch(_catcherDestroy);
+};
+
 // Exporta controladores
-exports.load   = mwLoad;
-exports.index  = mwIndex;
-exports.show   = mwShow;
-exports.answer = mwAnswer;
-exports.new    = mwNew;
-exports.create = mwCreate;
-exports.edit   = mwEdit;
-exports.update = mwUpdate;
+exports.load    = mwLoad;
+exports.index   = mwIndex;
+exports.show    = mwShow;
+exports.answer  = mwAnswer;
+exports.new     = mwNew;
+exports.create  = mwCreate;
+exports.edit    = mwEdit;
+exports.update  = mwUpdate;
+exports.destroy = mwDestroy;

@@ -10,17 +10,21 @@ var quizController = require("../controllers/quiz_controller.js");
 
 // --- Secuencia de enrutado
 
-router.get("/", homeController.home);   // Página principal
+// Página principal - localhost:5000
+router.get("/", homeController.home);   
 
-router.param("quizId", quizController.load);  // Autoload de comandos con :quizId
+// Autoload de Quiz para rutas con :quizId
+router.param("quizId", quizController.load);  
 
-router.get("/quizes",                      quizController.index);  // Listado Quizes
-router.get("/quizes/:quizId(\\d+)",        quizController.show);   // Pregunta
-router.get("/quizes/:quizId(\\d+)/answer", quizController.answer); // Respuesta
-router.get("/quizes/new",                  quizController.new);    // Pedir formulario Nuevo Quiz
-router.post("/quizes/create",              quizController.create); // Crear nuevo Quiz
-router.get("/quizes/:quizId(\\d+)/edit",   quizController.edit);   // Pedir formulario Modificar Quiz
-router.put("/quizes/:quizId(\\d+)",        quizController.update); // Actualizar Quiz
+// Rutas de Quiz
+router.get("/quizes",                      quizController.index);   // Listado Quizes
+router.get("/quizes/:quizId(\\d+)",        quizController.show);    // Pregunta
+router.get("/quizes/:quizId(\\d+)/answer", quizController.answer);  // Respuesta
+router.get("/quizes/new",                  quizController.new);     // Pedir formulario Nuevo Quiz
+router.post("/quizes/create",              quizController.create);  // Crear nuevo Quiz
+router.get("/quizes/:quizId(\\d+)/edit",   quizController.edit);    // Pedir formulario Modificar Quiz
+router.put("/quizes/:quizId(\\d+)",        quizController.update);  // Actualizar Quiz
+router.delete("/quizes/:quizId(\\d+)",     quizController.destroy); // Eliminar Quiz
 
 // Exporta el enrutador
 module.exports = router;

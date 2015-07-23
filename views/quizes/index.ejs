@@ -7,16 +7,21 @@
         </a>
       </td>
       <td>
-        <a href="quizes/<%= quizes[i].id %>/edit">
+        <a class="btn btn-default btn-xs" href="quizes/<%= quizes[i].id %>/edit">
           Editar
         </a>
+      </td>
+      <td>
+        <form method="post" action="quizes/<%= quizes[i].id %>?_method=delete">
+          <button class="btn btn-default btn-xs" type="submit" onclick="return confirm('Borrar: <%= quizes[i].pregunta %>');">
+            Borrar
+          </button>
+        </form>
       </td>
     </tr>
     <% } %>
 </table>
 
-<hr />
-
 <p>
-  <a class="btn btn-default" href="/quizes/new">Crear pregunta</a>
+  <a class="btn btn-default center-block" href="/quizes/new">Crear pregunta</a>
 </p>
