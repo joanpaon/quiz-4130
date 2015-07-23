@@ -4,6 +4,10 @@
 var nombreApp = "credenciales";
 var puertoApp = "5000";
 
+// Modo de ejecución
+process.env.NODE_ENV = "development";
+//process.env.NODE_ENV = "production";
+
 // Importa módulos
 var app = require('../app');
 var debug = require('debug')(nombreApp + ":server");
@@ -23,14 +27,21 @@ server.on('listening', onListening);
 
 // Normaliza el puerto en número, string o false
 function normalizarPuerto(valor) {
+  // Convierte el valor pasado a un entero de base 10
   var _puerto = parseInt(valor, 10);
 
-  if (isNaN(_puerto)) {
+  // Analiza la conversion
+  if (isNaN(_puerto)) {         // No ha funcionado
+    // Si la conversión no ha funcionado
+    // se devuelve el dato original
     _puerto = valor;
   } else if (_puerto < 0) {
+    // Si la conversión ha funcionado pero el puerto
+    // es negativo se devuelve el booleano "false"
     _puerto = false;
   }
 
+  // Devuelve el puerto
   return _puerto;
 }
 
@@ -40,6 +51,7 @@ function onError(error) {
     throw error;
   }
 
+  // Construye el mensaje de error
   var bind = typeof puerto === 'string' ? 'Pipe ' + puerto : 'Port ' + puerto;
 
   // handle specific listen errors with friendly messages

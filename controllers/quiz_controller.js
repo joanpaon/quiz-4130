@@ -49,7 +49,7 @@ var mwIndex = function (req, res, next) {
     // Parámetros vista
     var _param = {
       quizes: quizes,
-      errores: []
+      errores: []   // Errores de validación
     };
 
     // Renderizar la vista
@@ -75,7 +75,7 @@ var mwShow = function (req, res) {
   // Parámetros vista
   var _param = {
     quiz: req.quiz,
-    errores: []
+    errores: []   // Errores de validación
   };
 
   // Renderizar la vista
@@ -101,7 +101,7 @@ var mwAnswer = function (req, res) {
   var _param = {
     quiz: req.quiz,
     respuesta: _resultado,
-    errores: []
+    errores: []   // Errores de validación
   };
 
   // Renderizar la vista
@@ -113,10 +113,10 @@ var mwNew = function (req, res) {
   // Vista - Sin "/" inicial - Sin extensión "ejs"
   var _vista = "quizes/new";
 
-  // Define los campos de Quiz
+  // Inicializa los campos de Quiz
   var _campos = {
-    pregunta: "Pregunta",
-    respuesta: "Respuesta"
+    pregunta: "",
+    respuesta: ""
   };
   
   // Instancia un objeto que representa una fila
@@ -127,12 +127,18 @@ var mwNew = function (req, res) {
   // variables discretas viene en el momento de la
   // validación, cuando hay un error, se pasan los
   // valores previos
+  // ---
+  // build(values, [options]) -> Instance
+  // ---
+  // Builds a new model instance. 
+  // Values is an object of key value pairs, 
+  // must be defined but can be empty.
   var _quiz = models.Quiz.build(_campos);
   
   // Parámetros vista
   var _param = {
     quiz: _quiz,
-    errores: []
+    errores: []   // Errores de validación
   };
 
   // Renderizar la vista
@@ -143,7 +149,7 @@ var mwNew = function (req, res) {
 var mwCreate = function (req, res) {
   // Recupera el objeto Quiz cuyos datos se introdujeron
   // en el formulario de creación de nuevo Quiz en los
-  // campos con nombres "quiz[pregunta]" y "quiz[respuesta]"
+  // campos con nombres "quiz.pregunta" y "quiz.respuesta"
   // ---
   // Como el formulario envia los datos con POST, éstos
   // se encuentran URL-encoded en el cuerpo de la petición
@@ -170,7 +176,78 @@ var mwCreate = function (req, res) {
       // Parámetros vista
       var _param = {
         quiz: _quiz,
-        errores: error.errors
+        errores: error.errors   // Errores de validación
+      };
+
+      // Renderiza de nuevo el formulario
+      // Muestra valores previos y errores de validación
+      res.render(_vista, _param);
+    } else {
+      // Manejador de salvaguarda
+      var _handlerSave = function () {
+        // Pedir la lista de quizes
+        var _url = "/quizes";
+
+        // Redirecciona la vista
+        res.redirect(_url);
+      };
+
+      // Define los campos que se guardarán del Quiz
+      var _campos = {
+        fields: ["pregunta", "respuesta"]
+      };
+  
+      // Guarda el quiz en BD y lista los Quizes actualizados
+      _quiz.save(_campos).then(_handlerSave);
+    }
+  };
+  
+  // Valida el Quiz actual
+  // https://github.com/chriso/validator.js
+  _quiz.validate().then(_handlerValidate);
+};
+
+// GET - /quizes/:quizId(\\d+)/edit - Formulario para modificar Quiz
+var mwEdit = function (req, res) {
+  // Vista - Sin "/" inicial - Sin extensión "ejs"
+  var _vista = "quizes/edit";
+
+  // Recupera el Quiz a modificar - Autoload
+  var _quiz = req.quiz;
+  
+  // Parámetros vista
+  var _param = {
+    quiz: _quiz,
+    errores: []   // Errores de validación
+  };
+
+  // Renderizar la vista
+  res.render(_vista, _param);
+};
+
+// PUT - /quizes/:quizId(\\d+) - Modifica Quiz
+var mwUpdate = function (req, res) {
+  // Recupera el Quiz autocargado de la BD
+  var _quiz = req.quiz;
+  
+  // Recupera el Quiz enviado desde el formulario
+  var _quizFRM = req.body.quiz;
+
+  // Actualiza el valor de los campos
+  _quiz.pregunta = _quizFRM.pregunta;
+  _quiz.respuesta = _quizFRM.respuesta;
+  
+  // Manejador de validacion
+  var _handlerValidate = function (error) {
+    // Comprueba si se ha producido un error de validación
+    if (error) {
+      // Vista - Sin "/" inicial - Sin extensión "ejs"
+      var _vista = "quizes/edit";
+
+      // Parámetros vista
+      var _param = {
+        quiz: _quiz,
+        errores: error.errors   // Errores de validación
       };
 
       // Renderiza de nuevo el formulario
@@ -208,3 +285,5 @@ exports.show   = mwShow;
 exports.answer = mwAnswer;
 exports.new    = mwNew;
 exports.create = mwCreate;
+exports.edit   = mwEdit;
+exports.update = mwUpdate;

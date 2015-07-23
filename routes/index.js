@@ -19,6 +19,8 @@ router.get("/quizes/:quizId(\\d+)",        quizController.show);   // Pregunta
 router.get("/quizes/:quizId(\\d+)/answer", quizController.answer); // Respuesta
 router.get("/quizes/new",                  quizController.new);    // Pedir formulario Nuevo Quiz
 router.post("/quizes/create",              quizController.create); // Crear nuevo Quiz
+router.get("/quizes/:quizId(\\d+)/edit",   quizController.edit);   // Pedir formulario Modificar Quiz
+router.put("/quizes/:quizId(\\d+)",        quizController.update); // Actualizar Quiz
 
 // Exporta el enrutador
 module.exports = router;
