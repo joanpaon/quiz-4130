@@ -40,14 +40,20 @@ var crearModelo = function (sequelize, DataTypes) {
     pregunta: {
       type: DataTypes.STRING,
       field: "pregunta",
-      allowNull: false,
-      defaultValue: "pregunta"
+      validate: {
+        notEmpty: {
+          msg: "Falta la pregunta"
+        }
+      }
     },
     respuesta: {
       type: DataTypes.STRING,
       field: 'respuesta',
-      allowNull: false,
-      defaultValue: "respuesta"
+      validate: {
+        notEmpty: {
+          msg: "Falta la respuesta"
+        }
+      }
     }
   };
 
@@ -68,7 +74,7 @@ var crearModelo = function (sequelize, DataTypes) {
   var Modelo = sequelize.define(_nombreTabla, _estructuraTabla, _configTabla);
 
   // Devuelve el modelo
-  return Modelo
+  return Modelo;
 };
 
 // Exporta el modelo

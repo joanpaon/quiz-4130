@@ -10,8 +10,8 @@ var models = require("../models/models");
 // error en la búsqueda entonces se lanza un error y
 // se pasa el control al siguiente MW de error
 var mwLoad = function (req, res, next, quizId) {
-  // Promesa
-  var _promise = function (quiz) {
+  // Manejador de findById
+  var _handlerFindById = function (quiz) {
     // Comprueba si existe Quiz
     if (quiz) {
       // Almacena el quiz en request
@@ -21,10 +21,10 @@ var mwLoad = function (req, res, next, quizId) {
       next();
     } else {
       // Genera un objeto de error
-      var __error = new Error("No existe el Quiz: " + quizId);
+      var _error = new Error("No existe el Quiz: " + quizId);
 
       // Pasa el control al MW de error
-      next(__error);
+      next(_error);
     }
   };
 
@@ -36,23 +36,24 @@ var mwLoad = function (req, res, next, quizId) {
 
   // findById([options], ') -> Promise.<Instance>
   // Recupera el Quiz identificado por su clave primaria
-  models.Quiz.findById(quizId).then(_promise).catch(_catcher);
+  models.Quiz.findById(quizId).then(_handlerFindById).catch(_catcher);
 };
 
 // GET - /quizes - index
 var mwIndex = function (req, res, next) {
-  // Promesa
-  var _promise = function (quizes) {
+  // Manejador de búsqueda
+  var _handlerFindAll = function (quizes) {
     // Vista - Sin "/" inicial - Sin extensión "ejs"
-    var __vista = "quizes/index";
+    var _vista = "quizes/index";
 
     // Parámetros vista
-    var __param = {
-      quizes: quizes
+    var _param = {
+      quizes: quizes,
+      errores: []
     };
 
     // Renderizar la vista
-    res.render(__vista, __param);
+    res.render(_vista, _param);
   };
 
   // Gestor de errores
@@ -63,7 +64,7 @@ var mwIndex = function (req, res, next) {
 
   // findAll([options]) -> Promise.<Array.<Instance>>
   // Recupera todos los Quizes
-  models.Quiz.findAll().then(_promise).catch(_catcher);
+  models.Quiz.findAll().then(_handlerFindAll).catch(_catcher);
 };
 
 // GET - /quizes/:quizId(\\d+) - show
@@ -73,7 +74,8 @@ var mwShow = function (req, res) {
 
   // Parámetros vista
   var _param = {
-    quiz: req.quiz
+    quiz: req.quiz,
+    errores: []
   };
 
   // Renderizar la vista
@@ -93,16 +95,17 @@ var mwAnswer = function (req, res) {
   }
 
   // Vista - Sin "/" inicial - Sin extensión "ejs"
-  var __vista = "quizes/answer";
+  var _vista = "quizes/answer";
 
   // Parámetros vista
-  var __param = {
+  var _param = {
     quiz: req.quiz,
-    respuesta: _resultado
+    respuesta: _resultado,
+    errores: []
   };
 
   // Renderizar la vista
-  res.render(__vista, __param);
+  res.render(_vista, _param);
 };
 
 // GET - /quizes/new - Formulario para nuevo Quiz
@@ -112,21 +115,24 @@ var mwNew = function (req, res) {
 
   // Define los campos de Quiz
   var _campos = {
-    pregunta: "Escribir pregunta",
-    respuesta: "Escribir respuesta"
+    pregunta: "Pregunta",
+    respuesta: "Respuesta"
   };
   
   // Instancia un objeto que representa una fila
   // de la tabla Quiz, inicializando los campos
   // pregunta y respuesta
   // ---
-  // Realmente, en este caso, no es necesario hacer
-  // esto. Bastaria con enviar "_campos"
+  // La utilidad de hacerlo así en ver de utilizar
+  // variables discretas viene en el momento de la
+  // validación, cuando hay un error, se pasan los
+  // valores previos
   var _quiz = models.Quiz.build(_campos);
   
   // Parámetros vista
   var _param = {
-    quiz: _quiz
+    quiz: _quiz,
+    errores: []
   };
 
   // Renderizar la vista
@@ -135,20 +141,6 @@ var mwNew = function (req, res) {
 
 // POST - /quizes/create - Crea un nuevo Quiz
 var mwCreate = function (req, res) {
-  // Promesa
-  var _promise = function () {
-    // Pedir la lista de quizes
-    var __url = "/quizes";
-
-    // Redirecciona la vista
-    res.redirect(__url);
-  };
-
-  // Define los campos que se guardarán del Quiz
-  var _campos = {
-    fields: ["pregunta", "respuesta"]
-  };
-  
   // Recupera el objeto Quiz cuyos datos se introdujeron
   // en el formulario de creación de nuevo Quiz en los
   // campos con nombres "quiz[pregunta]" y "quiz[respuesta]"
@@ -168,8 +160,45 @@ var mwCreate = function (req, res) {
   // Este objeto es accesible a través de "req.body.quiz"
   var _quiz = models.Quiz.build(req.body.quiz);
   
-  // Guarda el quiz en BD y lista los Quizes actualizados
-  _quiz.save(_campos).then(_promise);
+  // Manejador de validacion
+  var _handlerValidate = function (error) {
+    // Comprueba si se ha producido un error de validación
+    if (error) {
+      // Vista - Sin "/" inicial - Sin extensión "ejs"
+      var _vista = "quizes/new";
+
+      // Parámetros vista
+      var _param = {
+        quiz: _quiz,
+        errores: error.errors
+      };
+
+      // Renderiza de nuevo el formulario
+      // Muestra valores previos y errores de validación
+      res.render(_vista, _param);
+    } else {
+      // Manejador de salvaguarda
+      var _handlerSave = function () {
+        // Pedir la lista de quizes
+        var _url = "/quizes";
+
+        // Redirecciona la vista
+        res.redirect(_url);
+      };
+
+      // Define los campos que se guardarán del Quiz
+      var _campos = {
+        fields: ["pregunta", "respuesta"]
+      };
+  
+      // Guarda el quiz en BD y lista los Quizes actualizados
+      _quiz.save(_campos).then(_handlerSave);
+    }
+  };
+  
+  // Valida el Quiz actual
+  // https://github.com/chriso/validator.js
+  _quiz.validate().then(_handlerValidate);
 };
 
 // Exporta controladores

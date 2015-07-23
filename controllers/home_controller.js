@@ -5,7 +5,8 @@ var mw = function (req, res) {
 
   // Parámetros vista
   var _param = {
-    title: 'Quiz'
+    title: 'Quiz',
+    errores: []
   };
 
   // Renderizar la vista

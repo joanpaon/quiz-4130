@@ -29,7 +29,7 @@ app.use(bodyParser.json());
 // ---
 // https://www.npmjs.com/package/qs#readme
 app.use(bodyParser.urlencoded({
-  extended: true  // ---> /quizes/create
+  extended: true // ---> /quizes/create
 }));
 
 app.use(cookieParser());
@@ -56,7 +56,8 @@ if (app.get('env') === 'development') {
     res.status(err.status || 500);
     res.render('error', {
       message: err.message,
-      error: err
+      error: err,
+      errores: []
     });
   });
 }
@@ -66,7 +67,8 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,
-    error: {}
+    error: {},
+    errores: []
   });
 });
 

@@ -26,7 +26,7 @@
     </header>
 
     <div class="row">
-      <nav class="col-sm-4 bg-info">
+      <nav class="col-sm-4 bg-info" role="navigation">
         <ul class="list-unstyled">
           <li>
             <a class="btn btn-default btn-sm btn-block" href="/">Inicio</a>
@@ -38,7 +38,17 @@
       </nav>
 
       <section class="col-sm-8 bg-warning">
-        <%- body %>
+        <% if (errores.length) { %>
+          <div class="h3">Corregir errores</div>
+          <ul>
+            <% for (var i in errores) { %>
+              <div class="h5 text-danger">
+                <%= errores[i].message %>
+              </div>
+            <% } %>
+          </ul>
+          <% } %>
+            <%- body %>
       </section>
     </div>
 
