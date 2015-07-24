@@ -1,7 +1,23 @@
 <div class="h4 text-center">Pregunta</div>
-<p class="text-center"><%= quiz.pregunta %></p>
+<div class="text-center">
+  <%= quiz.pregunta %>
+</div>
 
 <form class="form-inline text-center" method="get" action="/quizes/<%= quiz.id %>/answer">
-  <input class="form-control" type="text" id="respuesta" name="respuesta" placeholder="Responda aquí">
-  <input class="btn btn-default" type="submit" value="Enviar">
+  <input class="form-control" type="text" id="respuesta" name="respuesta" placeholder="Responda aquí" />
+  <input class="btn btn-default" type="submit" value="Enviar" />
 </form>
+
+<div class="h5">
+  <a href="/quizes/<%= quiz.id %>/comments/new">Nuevo comentario</a>
+</div>
+
+<div class="h4">
+  Comentarios: 
+</div>
+
+<% for (var i in quiz.comments) { %>
+  <div class="h5">
+    <%= quiz.comments[i].texto %>
+  </div>
+<% } %>

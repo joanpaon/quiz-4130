@@ -15,20 +15,20 @@ var Sequelize = require('sequelize');
 // extrae de la URL de conexión o bien se inicializa a null
 
 // Para probar en local
-var DATABASE_URL = "sqlite://:@:/";
+var DATABASE_URL     = "sqlite://:@:/";
 var DATABASE_STORAGE = "quiz.sqlite";
 
 //var url      = process.env.DATABASE_URL.match(/(.*)\:\/\/(.*?)\:(.*)@(.*)\:(.*)\/(.*)/);
 var url = DATABASE_URL.match(/(.*)\:\/\/(.*?)\:(.*)@(.*)\:(.*)\/(.*)/);
-var dialect = (url[1] || null);
+var dialect  = (url[1] || null);
 var protocol = (url[1] || null);
 var username = (url[2] || null);
 var password = (url[3] || null);
-var host = (url[4] || null);
-var port = (url[5] || null);
+var host     = (url[4] || null);
+var port     = (url[5] || null);
 var database = (url[6] || null);
 //var storage = process.env.DATABASE_STORAGE;
-var storage = DATABASE_STORAGE;
+var storage  = DATABASE_STORAGE;
 
 // Configuración del ORM
 var configORM = {
@@ -60,9 +60,9 @@ var sincronizarBD = function (sequelize, Quiz) {
   // Inicializa la BD
   var _inicializarBD = function () {
     // Muestra los datos pasados
-    var __mostrarDatos = function (datos) {
+    var _mostrarDatos = function (datos) {
       // Formato de visualización
-      var ___configLog = {
+      var _configLog = {
         plain: true
       };
 
@@ -72,14 +72,14 @@ var sincronizarBD = function (sequelize, Quiz) {
     };
 
     // Inserta datos de ejemplo
-    var __insertarDatosEjemplo = function (numRegistros) {
+    var _insertarDatosEjemplo = function (numRegistros) {
       // Valor retorno
-      var ___retorno = [{}];
+      var _retorno = [{}];
 
       // Inserta datos
       if (numRegistros === 0) {
         // Lista de registros de ejemplo
-        var ___listaQuizesEjemplo = [
+        var _listaQuizesEjemplo = [
           {
             pregunta: "Capital de Italia",
             respuesta: "Roma"
@@ -96,18 +96,18 @@ var sincronizarBD = function (sequelize, Quiz) {
 
         // bulkCreate(records, [options]) -> Promise.<Array.<Instance>>
         // Inserta la fila actual
-        ___retorno = Quiz.bulkCreate(___listaQuizesEjemplo);
+        _retorno = Quiz.bulkCreate(_listaQuizesEjemplo);
       }
 
       // Devuelve los datos insertados
-      return ___retorno;
+      return _retorno;
     };
 
     // count([options]) -> Promise.<Integer>
     // Cuenta el número de registros
     Quiz.count()
-      .then(__insertarDatosEjemplo)
-      .then(__mostrarDatos);
+      .then(_insertarDatosEjemplo)
+      .then(_mostrarDatos);
   };
 
   // Informar sincronización terminada
@@ -127,7 +127,6 @@ var sincronizarBD = function (sequelize, Quiz) {
     .then(_inicializarBD);
 };
 
-// ---
-
+// Exportar funcionalidades
 module.exports.inicializarORM = inicializarORM;
-module.exports.sincronizarBD = sincronizarBD;
+module.exports.sincronizarBD  = sincronizarBD;

@@ -11,13 +11,13 @@ var models = require("../models/models");
 // se pasa el control al siguiente MW de error
 var mwLoad = function (req, res, next, quizId) {
   // Manejador de findById
-  var _handlerFindById = function (quiz) {
+  var _handlerFindOne = function (quiz) {
     // Comprueba si existe Quiz
     if (quiz) {
-      // Almacena el quiz en request
+      // Almacena el Quiz en el objeto request
       req.quiz = quiz;
 
-      // Pasa el control al MW que corresponda
+      // Pasa el control al siguiente MW
       next();
     } else {
       // Genera un objeto de error
@@ -29,14 +29,41 @@ var mwLoad = function (req, res, next, quizId) {
   };
 
   // Gestor de errores
-  var _catcher = function (error) {
+  var _catcherFindOne = function (error) {
     // Pasa el control al MW de error
     next(error);
   };
 
-  // findById([options], ') -> Promise.<Instance>
-  // Recupera el Quiz identificado por su clave primaria
-  models.Quiz.findById(quizId).then(_handlerFindById).catch(_catcher);
+  // Parámetros de búsqueda
+  var _paramFindOne = {
+    // Recupera el reqistro Quiz que cumple los requisitos
+    where: {
+      id: Number(quizId)      
+    },
+    // Carga los registros asociados de la tabla Comment
+    // de cada uno de los registros encontrados por la 
+    // búsqueda de findAll usando left join en forma de array.
+    // Así, por cada Quiz encontrado, se genera una lista
+    // con los registros Comment asociados
+    // Esta lista se accede como si fuera un campo de tipo Array
+    // ---
+    // For hasOne / belongsTo, alias should be the singular name, 
+    // and for hasMany, it should be the plural
+    // ---
+    // Para una asociación 1:N sequelize asigna al campo extra 
+    // de la asociación el nombre de la tabla asociada 
+    // pero en plural ---> comments
+    // ---
+    // http://docs.sequelizejs.com/en/latest/docs/associations/ --> Naming strategy
+    include: [{
+      model: models.Comment  // Modelo de la asociación a incorporar
+    }]
+  };
+
+  // findOne([options]) -> Promise.<Instance>
+  // Recupera el primer Quiz que cumple con el criterio de búsqueda
+  // Añade el campo "comments" con la lista de todos los comentarios
+  models.Quiz.findOne(_paramFindOne).then(_handlerFindOne).catch(_handlerFindOne);
 };
 
 // GET - /quizes - index
@@ -49,7 +76,7 @@ var mwIndex = function (req, res, next) {
     // Parámetros vista
     var _param = {
       quizes: quizes,
-      errores: []   // Errores de validación
+      errores: [] // Errores de validación
     };
 
     // Renderizar la vista
@@ -74,8 +101,8 @@ var mwShow = function (req, res) {
 
   // Parámetros vista
   var _param = {
-    quiz: req.quiz,
-    errores: []   // Errores de validación
+    quiz: req.quiz,   // Suministrado por autoload
+    errores: []       // Errores de validación
   };
 
   // Renderizar la vista
@@ -101,7 +128,7 @@ var mwAnswer = function (req, res) {
   var _param = {
     quiz: req.quiz,
     respuesta: _resultado,
-    errores: []   // Errores de validación
+    errores: [] // Errores de validación
   };
 
   // Renderizar la vista
@@ -118,7 +145,7 @@ var mwNew = function (req, res) {
     pregunta: "",
     respuesta: ""
   };
-  
+
   // Instancia un objeto que representa una fila
   // de la tabla Quiz, inicializando los campos
   // pregunta y respuesta
@@ -134,11 +161,11 @@ var mwNew = function (req, res) {
   // Values is an object of key value pairs, 
   // must be defined but can be empty.
   var _quiz = models.Quiz.build(_campos);
-  
+
   // Parámetros vista
   var _param = {
     quiz: _quiz,
-    errores: []   // Errores de validación
+    errores: [] // Errores de validación
   };
 
   // Renderizar la vista
@@ -165,7 +192,7 @@ var mwCreate = function (req, res) {
   //  }
   // Este objeto es accesible a través de "req.body.quiz"
   var _quiz = models.Quiz.build(req.body.quiz);
-  
+
   // Manejador de validacion
   var _handlerValidate = function (error) {
     // Comprueba si se ha producido un error de validación
@@ -176,7 +203,7 @@ var mwCreate = function (req, res) {
       // Parámetros vista
       var _param = {
         quiz: _quiz,
-        errores: error.errors   // Errores de validación
+        errores: error.errors // Errores de validación
       };
 
       // Renderiza de nuevo el formulario
@@ -196,12 +223,12 @@ var mwCreate = function (req, res) {
       var _campos = {
         fields: ["pregunta", "respuesta"]
       };
-  
+
       // Guarda el quiz en BD y lista los Quizes actualizados
       _quiz.save(_campos).then(_handlerSave);
     }
   };
-  
+
   // Valida el Quiz actual
   // https://github.com/chriso/validator.js
   _quiz.validate().then(_handlerValidate);
@@ -214,11 +241,11 @@ var mwEdit = function (req, res) {
 
   // Recupera el Quiz a modificar - Autoload
   var _quiz = req.quiz;
-  
+
   // Parámetros vista
   var _param = {
     quiz: _quiz,
-    errores: []   // Errores de validación
+    errores: [] // Errores de validación
   };
 
   // Renderizar la vista
@@ -229,14 +256,14 @@ var mwEdit = function (req, res) {
 var mwUpdate = function (req, res) {
   // Recupera el Quiz autocargado de la BD
   var _quiz = req.quiz;
-  
+
   // Recupera el Quiz enviado desde el formulario
   var _quizFRM = req.body.quiz;
 
   // Actualiza el valor de los campos
   _quiz.pregunta = _quizFRM.pregunta;
   _quiz.respuesta = _quizFRM.respuesta;
-  
+
   // Manejador de validacion
   var _handlerValidate = function (error) {
     // Comprueba si se ha producido un error de validación
@@ -247,7 +274,7 @@ var mwUpdate = function (req, res) {
       // Parámetros vista
       var _param = {
         quiz: _quiz,
-        errores: error.errors   // Errores de validación
+        errores: error.errors // Errores de validación
       };
 
       // Renderiza de nuevo el formulario
@@ -267,12 +294,12 @@ var mwUpdate = function (req, res) {
       var _campos = {
         fields: ["pregunta", "respuesta"]
       };
-  
+
       // Guarda el quiz en BD y lista los Quizes actualizados
       _quiz.save(_campos).then(_handlerSave);
     }
   };
-  
+
   // Valida el Quiz actual
   // https://github.com/chriso/validator.js
   _quiz.validate().then(_handlerValidate);
@@ -291,13 +318,13 @@ var mwDestroy = function (req, res, next) {
     // Redireccionar vista
     res.redirect(_ruta);
   };
-    
+
   // Gestor de errores en la vista
   var _catcherDestroy = function (error) {
     // Pasa el control al MW de error
     next(error);
   };
-    
+
   // Elimina el Quiz actual
   _quiz.destroy().then(_handlerDestroy).catch(_catcherDestroy);
 };

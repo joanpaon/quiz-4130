@@ -1,16 +1,19 @@
+// Gestor de modelos
+//  > Define un ORM para la BD actual
+//  > Importa el modelo de cada tabla
+//  > Define las relaciones entre tablas
+//  > Creación de las tablas y sus relaciones en la BD
+//  > Exporta los modelos de las tablas
+
 /**
  * http://www.redotheweb.com/2013/02/20/sequelize-the-javascript-orm-in-practice.html
  */
 
-// Resuelve dependencias
+// Importa el módulo auxiliar
 var util = require("./util");
-
-// --- Instanciación del ORM
 
 // Instancia el ORM y lo conecta a la DB
 var sequelize = util.inicializarORM();
-
-// --- Importa modelos
 
 /**
  * El modelo de una tabla definido en un fichero
@@ -21,13 +24,31 @@ var sequelize = util.inicializarORM();
  * El modelo queda referenciado en el ORM
  * ---
  * Devuelve una instancia del Modelo
+ * ---
+ * import(path) -> Model
+ * ---
+ * Imports a model defined in another file
+ * ---
+ * Imported models are cached, so multiple calls to import 
+ * with the same path will not load the file multiple times
  */
 
-var Quiz = sequelize.import("quiz"); // Tabla "quiz"
+// Importa modelos - Sin extensión ".js" - Misma carpeta
+// sequelize.import envia como parámetros:
+//  > sequelize - Referencia a la instancia actual del ORM
+//  > DataTypes - Referencia de los tipos de datos soportados
+var Quiz    = sequelize.import("quiz");    // Tabla "quiz"
+var Comment = sequelize.import("comment"); // Tabla "comment"
 
-// --- Sincroniza DB y Modelo
+// Define la relación entre las tablas "quiz" y "comment"
+// http://docs.sequelizejs.com/en/latest/docs/associations/
+// Method belongsTo adds a quizId attribute to Comment to hold the primary key value for Quiz
+Comment.belongsTo(Quiz);  // Quiz    --> Parte 1
+Quiz.hasMany(Comment);    // Comment --> Parte N - Referencia al Quiz al que pertenece
+
+// Sincroniza DB y Modelo
 util.sincronizarBD(sequelize, Quiz);
 
-// --- Exporta modelos
-
-exports.Quiz = Quiz; // Tabla "quiz"
+// Exporta modelos
+exports.Quiz    = Quiz;    // Tabla "quiz"
+exports.Comment = Comment; // Tabla "comment"

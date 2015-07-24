@@ -1,0 +1,6 @@
+<div class="h3 text-center">Añadir comentario</div>
+
+<form method="post" action="/quizes/<%= quizId %>/comments">
+  <input class="form-control" type="text" name="comment[texto]" value="" placeholder="Escriba un comentario" />
+  <button type="submit">Enviar</button>
+</form>

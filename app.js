@@ -63,7 +63,21 @@ app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(partials());
 
-// Instala el enrutador de la aplicación - Se dispara para cualquier ruta
+// Instala un enrutador para la aplicación
+// Se dispara a partir de "/" (Para cualquier ruta)
+// Se podría haber escrito:
+//   app.use(enrutador);
+// Se ha mantenido la ruta para recalcar que es la ruta base
+// de todos los enrutados interiores por si un dia se decidiese
+// cambiar de ruta base 
+// ---
+// http://expressjs.com/es/4x/api.html#app.use
+// app.use([path,] function [, function...])
+// Mounts the middleware function(s) at the path. 
+// If path is not specified, it defaults to “/”.
+// ---
+// Si alguna ruta es interceptada por el enrutador, la petición
+// no pasa al siguiente MW
 app.use('/', enrutador);
 
 // --- Gestión de errores
