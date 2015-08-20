@@ -51,8 +51,8 @@ var mwCreate = function (req, res) {
       // ---> id       - El identificador del la sesión
       // ---> username - El nombre de usuario
       req.session.user = {
-        id: usuario.id,              // Clave primaria de usuario
-        username: usuario.username   // Nombre de usuario
+        id: usuario.id, // Clave primaria de usuario
+        username: usuario.username // Nombre de usuario
       };
 
       // Obtiene el PATH anterior al LOGIN - Convertido a String???
@@ -79,7 +79,20 @@ var mwDestroy = function (req, res) {
   res.redirect(_pathPrevio);
 };
 
+// MW de autorización de acceso restringido
+var mwLoginRequired = function (req, res, next) {
+  // Comprueba si existe una sesión
+  if (req.session.user) {
+    // Pasa el control al MW principal
+    next();
+  } else {
+    // Vuelve a pedir el formulario de LOGIN
+    res.redirect("/login");
+  }
+};
+
 // Exporta controladores
-exports.new     = mwNew;
-exports.create  = mwCreate;
-exports.destroy = mwDestroy;
+exports.new           = mwNew;
+exports.create        = mwCreate;
+exports.destroy       = mwDestroy;
+exports.loginRequired = mwLoginRequired;

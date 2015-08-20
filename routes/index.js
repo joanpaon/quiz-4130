@@ -37,11 +37,23 @@ enrutador.delete("/logout",                   sessionController.destroy); // Des
 enrutador.get("/quizes",                      quizController.index);   // Listado Quizes
 enrutador.get("/quizes/:quizId(\\d+)",        quizController.show);    // Pregunta
 enrutador.get("/quizes/:quizId(\\d+)/answer", quizController.answer);  // Respuesta
-enrutador.get("/quizes/new",                  quizController.new);     // Pedir formulario muevo Quiz
-enrutador.post("/quizes/create",              quizController.create);  // Crear nuevo Quiz
-enrutador.get("/quizes/:quizId(\\d+)/edit",   quizController.edit);    // Pedir formulario modificar Quiz
-enrutador.put("/quizes/:quizId(\\d+)",        quizController.update);  // Actualizar Quiz
-enrutador.delete("/quizes/:quizId(\\d+)",     quizController.destroy); // Eliminar Quiz
+
+// Una ruta puede invocarse con varios MWs separados por comas
+// que se ejecutan en serie, de forma que si el primer MW no 
+// pasa el control al segundo MW con next, el segundo MW no
+// llegará a ejecutarse
+// ---
+// Entre el MW principal y la ruta se interpone un MW de filtro
+// que solo dejará pasar el control al MW principal con next
+// si el usuario está autenticado
+// ---
+// El filtro sólo se aplica a aquellas operaciones de las que
+// desee que solo pueda acceder un usuario autenticado.
+enrutador.get("/quizes/new",                  sessionController.loginRequired, quizController.new);     // Pedir formulario muevo Quiz
+enrutador.post("/quizes/create",              sessionController.loginRequired, quizController.create);  // Crear nuevo Quiz
+enrutador.get("/quizes/:quizId(\\d+)/edit",   sessionController.loginRequired, quizController.edit);    // Pedir formulario modificar Quiz
+enrutador.put("/quizes/:quizId(\\d+)",        sessionController.loginRequired, quizController.update);  // Actualizar Quiz
+enrutador.delete("/quizes/:quizId(\\d+)",     sessionController.loginRequired, quizController.destroy); // Eliminar Quiz
 
 // Instala los controladorres de las rutas de Comment
 enrutador.get("/quizes/:quizId(\\d+)/comments/new", commentController.new);     // Pedir formulario nuevo Comment
