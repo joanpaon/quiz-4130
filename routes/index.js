@@ -1,10 +1,11 @@
 // Importa el módulo express
 var express = require('express');
 
-// Importa los controladores
-var homeController    = require("../controllers/home_controller.js");     // localhost:5000
-var quizController    = require("../controllers/quiz_controller.js");     // Localhost:5000/quizes
-var commentController = require("../controllers/comment_controller.js");  // Localhost:5000/quizes/:quizId(\\d+)/comments
+// Importa los controladores - No es necesario indicar extensión JS
+var homeController    = require("../controllers/home_controller");     // localhost:5000
+var quizController    = require("../controllers/quiz_controller");     // Localhost:5000/quizes
+var commentController = require("../controllers/comment_controller");  // Localhost:5000/quizes/:quizId(\\d+)/comments
+var sessionController = require("../controllers/session_controller");  // Localhost:5000/login - Localhost:5000/logout
 
 // Instancia el enrutador
 // ---
@@ -26,6 +27,11 @@ enrutador.get("/", homeController.home);
 
 // Instala el controlador de Autoload de Quiz para rutas con :quizId
 enrutador.param("quizId", quizController.load);  
+
+// Instala los controladorres de las rutas de control de sesión
+enrutador.get("/login",                       sessionController.new);     // Formulario LOGIN
+enrutador.post("/login",                      sessionController.create);  // Crear sesión
+enrutador.delete("/logout",                   sessionController.destroy); // Destruir sesión
 
 // Instala los controladorres de las rutas de Quiz
 enrutador.get("/quizes",                      quizController.index);   // Listado Quizes

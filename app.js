@@ -11,6 +11,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var partials = require('express-partials');
 var methodOverride = require('method-override');
+var session = require('express-session');
 
 // Importa el MW de enrutado - routes/index.js
 var enrutador = require('./routes/index');
@@ -30,7 +31,31 @@ app.set('view engine', 'ejs');
 app.use(favicon(path.join(__dirname, 'public/img', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(cookieParser());
+
+// https://github.com/expressjs/session
+// app.use(session());
+// ---
+// To store or access session data, simply use the request 
+// property req.session, which is (generally) serialized as 
+// JSON by the store, so nested objects are typically fine.
+app.use(session({
+  secret: 'Quiz-4130',
+  cookie: {
+    maxAge: 60000
+  },
+  resave: true,
+  saveUninitialized: true
+}));
+
+// Aplicar "semilla" para cifrar los cookies
+// Deberia ser un valor aleatorio
+// ---
+// Note Since express-session version 1.5.0, the cookie-parser
+// middleware no longer needs to be used for this module to work.
+// This module now directly reads and writes cookies on req/res. 
+// Using cookie-parser may result in issues if the secret is not 
+// the same between this module and cookie-parser.
+// app.use(cookieParser("Quiz-4130"));
 
 // https://github.com/expressjs/body-parser#bodyparserurlencodedoptions
 // ---
@@ -61,7 +86,49 @@ app.use(bodyParser.urlencoded({
 app.use(methodOverride("_method"));
 
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Maquetación con EJS
+// https://github.com/publicclass/express-partials
 app.use(partials());
+
+// Helpers dinámicos
+app.use(function (req, res, next) {
+  // Comprueba si en la URL de la petición existe
+  // bien "/login" o bien "/logout"
+  // ---
+  // La variable req.path de NodeJS proporciona la URL de la
+  // petición excluyendo los parámetros que hubiese.
+  // A partir de ---> /myurl.htm?allkinds&ofparameters=true
+  // Proporciona ---> /myurl.htm
+  // http://expressjs.com/api.html#req.path
+  if (!req.path.match(/\/login|\/logout/)) {
+    // La variable req.session ha sido creada por express-ssesion
+    // para el mantenimiento de la sessión
+    // ---
+    // En caso de una petición distinta a LOGIN/LOGOUT, se memoriza el 
+    // PATH de la página en la que está el cliente en la variable 
+    // req.session.redir para volver a ella después de hacer LOGIN/LOGOUT
+    req.session.redir = req.path;
+  }
+
+  // Hacer visible los parámetros de la sesión en las vistas que se
+  // manejan en el siguiente MW. 
+  // ---
+  // The app.locals object is a JavaScript object, and its properties 
+  // are local variables within the application.
+  // ---
+  // The res.locals object contains response local variables scoped to 
+  // the request, and therefore available only to the view(s) rendered 
+  // during that request / response cycle (if any). 
+  // Otherwise, this property is identical to app.locals.
+  // ---
+  // La variable req.session ha sido creada por express-ssesion
+  // para el mantenimiento de la sessión
+  res.locals.session = req.session;
+
+  // Siguiente MW
+  next();
+});
 
 // Instala un enrutador para la aplicación
 // Se dispara a partir de "/" (Para cualquier ruta)
@@ -92,7 +159,7 @@ app.use(function (req, res, next) {
 
   // Establece el código de error
   err.status = 404;
-  
+
   // Invoca el siguiente MW de error y le pasa el error
   next(err);
 });

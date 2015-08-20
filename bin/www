@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Parámetros de la aplicación
-var nombreApp = "credenciales";
+var nombreApp = "quiz-4130";
 var puertoApp = "5000";
 
 // Modo de ejecución
@@ -105,4 +105,5 @@ function onListening() {
   var addr = server.address();
   var bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
   debug('Listening on ' + bind);
+  console.log("Aplicación " + nombreApp + " escuchando en puerto " + puertoApp + "\n");
 }

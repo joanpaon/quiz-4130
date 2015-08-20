@@ -22,6 +22,16 @@
 <body>
   <div class="container">
     <header class="row bg-success">
+      <% if (!session.user) { %>
+        <div class="h6 text-right"><a class="btn btn-default btn-xs" href="/login">Login</a></div>
+        <% } else { %>
+          <form method="post" action="/logout?_method=delete">
+            <div class="h6 text-right">
+              <%= session.user.username %>
+              <button class="btn btn-default btn-xs" type="submit">Logout</button>
+            </div>
+          </form>
+        <% } %>
       <div class="h1 text-center col-sm-12">Quiz - El juego de las preguntas</div>
     </header>
 
@@ -47,8 +57,8 @@
               </div>
             <% } %>
           </ul>
-          <% } %>
-            <%- body %>
+        <% } %>
+        <%- body %>
       </section>
     </div>
 
